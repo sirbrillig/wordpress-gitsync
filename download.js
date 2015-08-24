@@ -1,8 +1,13 @@
 var fs = require( 'fs' );
 var q = require( 'q' );
 
+var siteUrl = 'unknown_site';
+
 function downloadSite( site ) {
-	downloadPages( site );
+	siteUrl = site._id;
+	createSiteDirectory().then( function() {
+		downloadPages( site );
+	} );
 }
 
 function downloadPages( site ) {
@@ -30,13 +35,20 @@ function writePostToFile( post ) {
 	fs.writeFile( filename, postToString( post ) );
 }
 
+function getSiteDirectory() {
+	return siteUrl;
+}
+
 function getPostsDirectory() {
-	return 'posts';
+	return getSiteDirectory() + '/posts';
+}
+
+function createSiteDirectory() {
+	return q.nfcall( fs.mkdir, getSiteDirectory() );
 }
 
 function createPostsDirectory() {
-	var directory = getPostsDirectory();
-	return q.nfcall( fs.mkdir, directory );
+	return q.nfcall( fs.mkdir, getPostsDirectory() );
 }
 
 function postToString( post ) {
