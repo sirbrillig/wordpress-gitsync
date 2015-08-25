@@ -1,5 +1,7 @@
-var fs = require( 'fs' );
-var q = require( 'q' );
+var fs = require( 'fs' ),
+	q = require( 'q' );
+
+var postToString = require( './post-encoding' ).postToString;
 
 var siteUrl = 'unknown_site';
 
@@ -49,17 +51,6 @@ function createSiteDirectory() {
 
 function createPostsDirectory() {
 	return q.nfcall( fs.mkdir, getPostsDirectory() );
-}
-
-function postToString( post ) {
-	var propertiesToCopy = [ 'title', 'likes_enabled', 'discussion', 'page_template', 'date', 'status', 'type', 'post_thumbnail', 'sticky', 'slug', 'sharing_enabled', 'featured_image', 'content' ];
-	var postToSave = propertiesToCopy.reduce( function( prev, key ) {
-		if ( typeof post[ key ] !== 'undefined' ) {
-			prev[ key ] = post[ key ];
-		}
-		return prev;
-	}, {} );
-	return JSON.stringify( postToSave );
 }
 
 module.exports = downloadSite;
