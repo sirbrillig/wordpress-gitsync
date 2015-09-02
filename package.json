@@ -8,7 +8,9 @@
     "q": "^1.4.1",
     "wpcom": "^4.6.0"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "debug": "^2.2.0"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
