@@ -1,8 +1,17 @@
-var argv = require( 'minimist' )( process.argv.slice( 2 ) );
+var parseArgs = require( 'minimist' );
 var downloadSite = require( './download' );
+
+var argv = parseArgs( process.argv.slice( 2 ), {
+	boolean: true
+} );
 
 if ( ! argv.site ) {
 	console.error( 'Provide a site with the --site option' );
+	process.exit( 1 );
+}
+
+if ( ! argv.download && ! argv.upload ) {
+	console.error( 'Either --download or --upload are required' );
 	process.exit( 1 );
 }
 
