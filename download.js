@@ -1,9 +1,13 @@
-var wpcom = require( 'wpcom' )();
-
-var fs = require( 'fs' ),
+// External dependencies
+var wpcom = require( 'wpcom' )(),
+	fs = require( 'fs' ),
 	debug = require( 'debug' )( 'wpgs:download' ),
 	q = require( 'q' );
 
+// Promisify wpcom functions
+var wpcomGet = q.nbind( wpcom.req.get, wpcom.req );
+
+// Internal dependencies
 var postToString = require( './post-encoding' ).postToString;
 
 var siteUrl = 'unknown_site';
@@ -19,7 +23,7 @@ function downloadSite( site ) {
 
 function downloadCss() {
 	debug( 'downloadCss', siteUrl );
-	q.ninvoke( wpcom.req, 'get', '/sites/' + siteUrl + '/customcss' )
+	wpcomGet( '/sites/' + siteUrl + '/customcss' )
 	.fail( function( err ) {
 		console.error( err );
 	} )
@@ -39,7 +43,8 @@ function downloadCss() {
 }
 
 function downloadPages( site ) {
-	q.ninvoke( site, 'postsList', { type: 'page', status: 'publish' } )
+	var wpcomPostList = q.nbind( site.postsList, site );
+	wpcomPostList( { type: 'page', status: 'publish' } )
 	.fail( function( err ) {
 		console.error( err );
 	} )
