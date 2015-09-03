@@ -4,16 +4,14 @@ var wpcom = require( 'wpcom' )(),
 	q = require( 'q' );
 
 // Internal dependencies
-var Styles = require( './styles' );
+var Styles = require( './styles' ),
+	Site = require( './site' );
 
 // Promisify wpcom functions
 var wpcomPost = q.nbind( wpcom.req.post, wpcom.req );
 
-var siteUrl = 'unknown_site';
-
-function uploadSite( site ) {
-	siteUrl = site._id;
-	debug( 'uploadSite', siteUrl );
+function uploadSite() {
+	debug( 'uploadSite', Site.getUrl() );
 	Styles.findFilename()
 	.then( Styles.readStyles )
 	.then( function() {
@@ -29,8 +27,8 @@ function uploadCss( cssData ) {
 		cssData.preprocessor = 'sass';
 	}
 
-	debug( 'uploadCss', siteUrl );
-	wpcomPost( '/sites/' + siteUrl + '/customcss', cssData )
+	debug( 'uploadCss', Site.getUrl() );
+	wpcomPost( '/sites/' + Site.getUrl() + '/customcss', cssData )
 	.then( function( data ) {
 		debug( 'upload of css successful', data );
 	} )

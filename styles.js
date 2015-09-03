@@ -3,17 +3,19 @@ var fs = require( 'fs' ),
 	debug = require( 'debug' )( 'wpgs:styles' ),
 	q = require( 'q' );
 
+// Internal dependencies
+var Site = require( './site' );
+
 // Promisify functions
 var doesFileExist = q.nbind( fs.readFile, fs ),
 	readFile = q.nbind( fs.readFile, fs );
 
 var css,
 	filename = '',
-	preprocessor = '',
-	pathToStyles = 'sirbrilligtesttwo.wordpress.com'; // FIXME: this should be from another module
+	preprocessor = '';
 
 function buildFilename( suffix ) {
-	return pathToStyles + '/customcss.' + suffix;
+	return Site.getUrl() + '/customcss.' + suffix;
 }
 
 function saveCss( newCss ) {

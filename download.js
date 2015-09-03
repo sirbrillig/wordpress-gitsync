@@ -8,22 +8,20 @@ var wpcom = require( 'wpcom' )(),
 var wpcomGet = q.nbind( wpcom.req.get, wpcom.req );
 
 // Internal dependencies
-var postToString = require( './post-encoding' ).postToString;
+var postToString = require( './post-encoding' ).postToString,
+	Site = require( './site' );
 
-var siteUrl = 'unknown_site';
-
-function downloadSite( site ) {
-	siteUrl = site._id;
-	debug( 'downloadSite', siteUrl );
+function downloadSite() {
+	debug( 'downloadSite', Site.getUrl() );
 	createSiteDirectory().then( function() {
-		downloadPages( site );
+		downloadPages( Site.getSite() );
 		downloadCss();
 	} );
 }
 
 function downloadCss() {
-	debug( 'downloadCss', siteUrl );
-	wpcomGet( '/sites/' + siteUrl + '/customcss' )
+	debug( 'downloadCss', Site.getUrl() );
+	wpcomGet( '/sites/' + Site.getUrl() + '/customcss' )
 	.fail( function( err ) {
 		console.error( err );
 	} )
@@ -78,7 +76,7 @@ function writeCssToFile( css, type ) {
 }
 
 function getSiteDirectory() {
-	return siteUrl;
+	return Site.getUrl();
 }
 
 function getPostsDirectory() {
