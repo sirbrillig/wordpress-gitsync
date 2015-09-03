@@ -1,5 +1,6 @@
 var parseArgs = require( 'minimist' );
 var downloadSite = require( './download' );
+var uploadSite = require( './upload' );
 
 var argv = parseArgs( process.argv.slice( 2 ), {
 	boolean: true
@@ -22,4 +23,8 @@ var site = wpcom.site( argv.site );
 
 if ( argv.download ) {
 	downloadSite( site );
+}
+
+if ( argv.upload ) {
+	uploadSite( site );
 }
