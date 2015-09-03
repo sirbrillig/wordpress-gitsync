@@ -33,7 +33,7 @@ function uploadCss( cssData ) {
 		debug( 'upload of css successful', data );
 	} )
 	.catch( function( err ) {
-		console.error( 'error posting CSS', err );
+		console.error( 'error uploading css:', err.statusCode, err.name, err.message );
 	} );
 }
 
