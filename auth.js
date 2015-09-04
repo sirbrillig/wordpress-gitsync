@@ -53,21 +53,18 @@ function getAuthFromServer() {
 
 	// Home
 	app.get( '/', function( req, res ) {
-		res.render( 'home', {
-			settings: settings,
-			url: wpoauth.urlToConnect() + '&blog=' + Site.getUrl()
-		} );
+		res.redirect( wpoauth.urlToConnect() + '&blog=' + Site.getUrl() );
 	} );
 
 	// OAuth response with code
 	var redirectPath = url.parse( wpoauth.opts.url.redirect ).pathname;
 	app.get( redirectPath, function( req, res ) {
 		var code = req.query.code;
-		res.render( 'ready', { code: code } );
+		res.redirect( '/get-token/' + code );
 	} );
 
 	// Access token fetch
-	app.get( '/get_token/:code', function( req, res ) {
+	app.get( '/get-token/:code', function( req, res ) {
 		wpoauth.code( req.params.code );
 		wpoauth.requestAccessToken( function( err, data ) {
 			if ( err ) {
