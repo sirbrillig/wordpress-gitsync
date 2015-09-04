@@ -1,5 +1,6 @@
 // External dependencies
 var fs = require( 'fs' ),
+	openurl = require( 'openurl' ),
 	url = require( 'url' ),
 	path = require( 'path' ),
 	express = require( 'express' ),
@@ -48,11 +49,14 @@ var Auth = {
 		var server;
 		app.use( express.static( pub ) );
 
+		app.set( 'views', path.join( __dirname, 'views' ) );
+		app.set( 'view engine', 'jade' );
+
 		// Home
 		app.get( '/', function( req, res ) {
 			res.render( 'home', {
 				settings: settings,
-				url: wpoauth.urlToConnect()
+				url: wpoauth.urlToConnect() + '&blog=' + Site.getUrl()
 			} );
 		} );
 
@@ -64,13 +68,13 @@ var Auth = {
 		} );
 
 		// Access token fetch
-		app.get( '/get-token/:code', function( req, res ) {
+		app.get( '/get_token/:code', function( req, res ) {
 			wpoauth.code( req.params.code );
 			wpoauth.requestAccessToken( function( err, data ) {
 				if ( err ) {
 					return res.render( 'error', err );
 				}
-				res.render( 'complete', data );
+				res.render( 'ok', data );
 				server.close();
 				token = data.access_token;
 				promise.resolve();
@@ -80,6 +84,7 @@ var Auth = {
 		var port = settings.port || 3001;
 		server = app.listen( port );
 		console.log( 'Started web server for authentication request on port', port );
+		openurl.open( 'http://localhost:' + port );
 		return promise.promise;
 	},
 
