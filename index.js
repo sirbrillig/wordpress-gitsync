@@ -19,11 +19,11 @@ if ( ! argv.download && ! argv.upload ) {
 }
 
 Site.connect( argv.site );
-// TODO: verify we connected
 
 if ( argv.download ) {
 	downloadSite();
 } else if ( argv.upload ) {
-	Auth.loadToken()
+	Auth.beginAuth()
+	.then( Auth.loadToken )
 	.then( uploadSite );
 }
