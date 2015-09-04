@@ -2,8 +2,7 @@
 extends layout
 
 block content
-  include intro
-  h2.err Error
+  h2.err An error occurred during authentication:
   table.err
     tr
       td error
@@ -11,5 +10,5 @@ block content
     tr
       td description
       td #{error_description}
-  p.msg
-    a(href='/') Try again ?
+  p.actions
+    a.btn(href='/') Try again?
