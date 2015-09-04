@@ -23,7 +23,6 @@ Site.connect( argv.site );
 if ( argv.download ) {
 	downloadSite();
 } else if ( argv.upload ) {
-	Auth.beginAuth()
-	.then( Auth.loadToken )
+	Auth.loadToken()
 	.then( uploadSite );
 }

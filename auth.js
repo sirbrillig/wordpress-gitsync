@@ -7,11 +7,35 @@ var fs = require( 'fs' ),
 	debug = require( 'debug' )( 'wpgs:auth' ),
 	q = require( 'q' );
 
+// Internal dependencies
+var Site = require( './site' );
+
 // Promisify functions
 var readFile = q.nbind( fs.readFile, fs );
 
 var authFilename = '.wpcomauth',
 	token = '';
+
+function loadTokenFromFile() {
+	var promise = q.defer();
+	authFilename = authFilename + '-' + Site.getUrl();
+	readFile( authFilename, { encoding: 'utf8' } )
+	.then( function( content ) {
+		if ( ! content || ! content.replace ) {
+			debug( 'invalid data found in auth file', content );
+			throw 'Invalid data found in auth file';
+		}
+		token = content.replace( /\s/, '' );
+		debug( 'auth token loaded' );
+		promise.resolve();
+	} )
+	.catch( function() {
+		debug( 'error reading wpcomauth token' );
+		console.error( 'No WordPress.com auth token found in `' + authFilename + '`' );
+		promise.reject();
+	} );
+	return promise.promise;
+}
 
 var Auth = {
 
@@ -21,6 +45,7 @@ var Auth = {
 		var wpoauth = wpcomOAuth( settings );
 		var pub = path.join( __dirname, '/public' );
 		var app = express();
+		var server;
 		app.use( express.static( pub ) );
 
 		// Home
@@ -46,31 +71,24 @@ var Auth = {
 					return res.render( 'error', err );
 				}
 				res.render( 'complete', data );
+				server.close();
+				token = data.access_token;
+				promise.resolve();
 			} );
 		} );
 
 		var port = settings.port || 3001;
-		app.listen( port );
+		server = app.listen( port );
 		console.log( 'Started web server for authentication request on port', port );
 		return promise.promise;
 	},
 
 	loadToken: function() {
 		var promise = q.defer();
-		readFile( authFilename, { encoding: 'utf8' } )
-		.then( function( content ) {
-			if ( ! content || ! content.replace ) {
-				throw 'Invalid data found in auth file: ' + content;
-			}
-			token = content.replace( /\s/, '' );
-			debug( 'auth token loaded' );
-			promise.resolve();
-		} )
-		.catch( function( err ) {
-			debug( 'error reading wpcomauth token:', err );
-			console.error( 'No WordPress.com auth token found. Please generate one and save it in `' + authFilename + '`' );
-			promise.reject();
-		} );
+		loadTokenFromFile()
+		.catch( Auth.beginAuth )
+		.catch( promise.reject )
+		.then( promise.resolve );
 		return promise.promise;
 	},
 
