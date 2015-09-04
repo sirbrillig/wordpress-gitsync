@@ -24,5 +24,9 @@ if ( argv.download ) {
 	downloadSite();
 } else if ( argv.upload ) {
 	Auth.loadToken()
-	.then( uploadSite );
+	.then( uploadSite )
+	.then( function() {
+		// Explicitly kill the app in case a web server is running
+		process.exit();
+	} );
 }

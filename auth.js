@@ -38,60 +38,69 @@ function loadTokenFromFile() {
 	return promise.promise;
 }
 
+var server;
+
+function getAuthFromServer() {
+	var promise = q.defer();
+	var settings = require( './settings.json' );
+	var wpoauth = wpcomOAuth( settings );
+	var pub = path.join( __dirname, '/public' );
+	var app = express();
+	app.use( express.static( pub ) );
+
+	app.set( 'views', path.join( __dirname, 'views' ) );
+	app.set( 'view engine', 'jade' );
+
+	// Home
+	app.get( '/', function( req, res ) {
+		res.render( 'home', {
+			settings: settings,
+			url: wpoauth.urlToConnect() + '&blog=' + Site.getUrl()
+		} );
+	} );
+
+	// OAuth response with code
+	var redirectPath = url.parse( wpoauth.opts.url.redirect ).pathname;
+	app.get( redirectPath, function( req, res ) {
+		var code = req.query.code;
+		res.render( 'ready', { code: code } );
+	} );
+
+	// Access token fetch
+	app.get( '/get_token/:code', function( req, res ) {
+		wpoauth.code( req.params.code );
+		wpoauth.requestAccessToken( function( err, data ) {
+			if ( err ) {
+				return res.render( 'error', err );
+			}
+			res.render( 'ok', data );
+			debug( 'token received from server' );
+			token = data.access_token;
+			fs.writeFile( authFilename, token );
+			promise.resolve();
+			stopWebServer();
+		} );
+	} );
+
+	var port = settings.port || 3001;
+	server = app.listen( port );
+	console.log( 'Started web server for authentication request on port', port );
+	openurl.open( 'http://localhost:' + port );
+	return promise.promise;
+}
+
+function stopWebServer() {
+	server.close( function() {
+		debug( 'web server closed' );
+	} );
+}
+
 var Auth = {
-
-	beginAuth: function() {
-		var promise = q.defer();
-		var settings = require( './settings.json' );
-		var wpoauth = wpcomOAuth( settings );
-		var pub = path.join( __dirname, '/public' );
-		var app = express();
-		var server;
-		app.use( express.static( pub ) );
-
-		app.set( 'views', path.join( __dirname, 'views' ) );
-		app.set( 'view engine', 'jade' );
-
-		// Home
-		app.get( '/', function( req, res ) {
-			res.render( 'home', {
-				settings: settings,
-				url: wpoauth.urlToConnect() + '&blog=' + Site.getUrl()
-			} );
-		} );
-
-		// OAuth response with code
-		var redirectPath = url.parse( wpoauth.opts.url.redirect ).pathname;
-		app.get( redirectPath, function( req, res ) {
-			var code = req.query.code;
-			res.render( 'ready', { code: code } );
-		} );
-
-		// Access token fetch
-		app.get( '/get_token/:code', function( req, res ) {
-			wpoauth.code( req.params.code );
-			wpoauth.requestAccessToken( function( err, data ) {
-				if ( err ) {
-					return res.render( 'error', err );
-				}
-				res.render( 'ok', data );
-				server.close();
-				token = data.access_token;
-				promise.resolve();
-			} );
-		} );
-
-		var port = settings.port || 3001;
-		server = app.listen( port );
-		console.log( 'Started web server for authentication request on port', port );
-		openurl.open( 'http://localhost:' + port );
-		return promise.promise;
-	},
 
 	loadToken: function() {
 		var promise = q.defer();
 		loadTokenFromFile()
-		.catch( Auth.beginAuth )
+		.catch( getAuthFromServer )
 		.catch( promise.reject )
 		.then( promise.resolve );
 		return promise.promise;

@@ -10,15 +10,20 @@ var Styles = require( './styles' ),
 	Site = require( './site' );
 
 function uploadSite() {
+	var promise = q.defer();
 	debug( 'uploadSite', Site.getUrl() );
 	Styles.findFilename()
 	.then( Styles.readStyles )
 	.then( function() {
-		uploadCss( { 'css': Styles.getStyles(), 'preprocessor': Styles.getPreprocessor() } );
+		uploadCss( { 'css': Styles.getStyles(), 'preprocessor': Styles.getPreprocessor() } )
+		.catch( promise.reject )
+		.then( promise.resolve );
 	} );
+	return promise.promise;
 }
 
 function uploadCss( cssData ) {
+	var promise = q.defer();
 	// We have to load this down here because we have to wait for the token to be read.
 	wpcom = require( 'wpcom' )( Auth.getToken() );
 	var wpcomPost = q.nbind( wpcom.req.post, wpcom.req );
@@ -41,10 +46,13 @@ function uploadCss( cssData ) {
 	wpcomPost( '/sites/' + Site.getUrl() + '/customcss', cssData )
 	.then( function() {
 		debug( 'upload of css successful' );
+		promise.resolve();
 	} )
 	.catch( function( err ) {
 		console.error( 'error uploading css:', err.statusCode, err.name, err.message );
+		promise.reject();
 	} );
+	return promise.promise;
 }
 
 module.exports = uploadSite;
