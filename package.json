@@ -4,6 +4,7 @@
   "description": "A tool to synchronize WordPress content and settings to a git repository.",
   "main": "index.js",
   "dependencies": {
+    "merge": "^1.2.0",
     "minimist": "^1.1.3",
     "q": "^1.4.1",
     "wpcom": "^4.6.0"

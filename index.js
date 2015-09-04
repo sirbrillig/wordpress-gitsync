@@ -1,6 +1,7 @@
 // Internal dependencies
 var parseArgs = require( 'minimist' ),
 	Site = require( './site' ),
+	Auth = require( './auth' ),
 	downloadSite = require( './download' ),
 	uploadSite = require( './upload' );
 
@@ -23,5 +24,6 @@ Site.connect( argv.site );
 if ( argv.download ) {
 	downloadSite();
 } else if ( argv.upload ) {
-	uploadSite();
+	Auth.loadToken()
+	.then( uploadSite );
 }
