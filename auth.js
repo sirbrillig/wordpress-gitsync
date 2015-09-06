@@ -53,7 +53,7 @@ function getAuthFromServer() {
 
 	// Home
 	app.get( '/', function( req, res ) {
-		res.redirect( wpoauth.urlToConnect() + '&blog=' + Site.getUrl() );
+		res.redirect( wpoauth.urlToConnect( { blog: Site.getUrl() } ) );
 	} );
 
 	// OAuth response with code
@@ -68,7 +68,9 @@ function getAuthFromServer() {
 		wpoauth.code( req.params.code );
 		wpoauth.requestAccessToken( function( err, data ) {
 			if ( err ) {
-				return res.render( 'error', err );
+				debug( 'error while reading response code', err, data );
+				res.render( 'error', err );
+				return;
 			}
 			res.render( 'ok', data );
 			debug( 'token received from server' );
