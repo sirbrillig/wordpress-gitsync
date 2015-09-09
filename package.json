@@ -1,8 +1,11 @@
 {
-  "name": "wordpress-gitsync",
+  "name": "wordpress-warp",
   "version": "1.0.0",
-  "description": "A tool to synchronize WordPress content and settings to a git repository.",
+  "description": "A tool to download and upload WordPress content and settings to a local directory.",
   "main": "index.js",
+  "bin": {
+    "warp": "bin/warp.js"
+  },
   "dependencies": {
     "chokidar": "^1.0.5",
     "express": "^4.13.3",
@@ -12,10 +15,10 @@
     "openurl": "^1.1.0",
     "q": "^1.4.1",
     "wpcom": "^4.6.0",
-    "wpcom-oauth": "^0.3.3"
+    "wpcom-oauth": "^0.3.3",
+    "debug": "^2.2.0"
   },
   "devDependencies": {
-    "debug": "^2.2.0"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"

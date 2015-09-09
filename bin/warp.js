@@ -1,12 +1,14 @@
+#!/usr/bin/env node
+
 // External dependencies
-var chokidar = require( 'chokidar' );
+var chokidar = require( 'chokidar' ),
+	parseArgs = require( 'minimist' );
 
 // Internal dependencies
-var parseArgs = require( 'minimist' ),
-	Site = require( './site' ),
-	Auth = require( './auth' ),
-	downloadSite = require( './download' ),
-	uploadSite = require( './upload' );
+var Site = require( '../lib/site' ),
+	Auth = require( '../lib/auth' ),
+	downloadSite = require( '../lib/download' ),
+	uploadSite = require( '../lib/upload' );
 
 // Parse command-line arguments
 var argv = parseArgs( process.argv.slice( 2 ), {
