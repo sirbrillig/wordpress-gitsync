@@ -1,3 +1,6 @@
+// External dependencies
+var chokidar = require( 'chokidar' );
+
 // Internal dependencies
 var parseArgs = require( 'minimist' ),
 	Site = require( './site' ),
@@ -18,6 +21,18 @@ if ( ! argv.download && ! argv.upload ) {
 	process.exit( 1 );
 }
 
+function beginWatching() {
+	var toWatch = './' + Site.getUrl();
+	console.log( 'watching for changes to', toWatch );
+	chokidar.watch( toWatch, { persistent: true } ).on( 'change', function( path ) {
+		console.log( 'changes detected to', path );
+		uploadSite()
+		.then( function() {
+			console.log( 'upload complete.' );
+		} );
+	} );
+}
+
 Site.connect( argv.site );
 
 if ( argv.download ) {
@@ -26,7 +41,11 @@ if ( argv.download ) {
 	Auth.loadToken()
 	.then( uploadSite )
 	.then( function() {
+		if ( argv.watch ) {
+			return beginWatching();
+		}
 		// Explicitly kill the app in case a web server is running
+		console.log( 'all done!' );
 		process.exit();
 	} );
 }
