@@ -19,11 +19,14 @@ if ( ! argv.download && ! argv.upload ) {
 }
 
 Site.connect( argv.site );
-// TODO: verify we connected
 
 if ( argv.download ) {
 	downloadSite();
 } else if ( argv.upload ) {
 	Auth.loadToken()
-	.then( uploadSite );
+	.then( uploadSite )
+	.then( function() {
+		// Explicitly kill the app in case a web server is running
+		process.exit();
+	} );
 }

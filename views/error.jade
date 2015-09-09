@@ -1,0 +1,14 @@
+
+extends layout
+
+block content
+  h2.err An error occurred during authentication:
+  table.err
+    tr
+      td error
+      td #{error}
+    tr
+      td description
+      td #{error_description}
+  p.actions
+    a.btn(href='/') Try again?
