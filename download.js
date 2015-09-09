@@ -8,7 +8,7 @@ var wpcom = require( 'wpcom' )(),
 var wpcomGet = q.nbind( wpcom.req.get, wpcom.req );
 
 // Internal dependencies
-var postToString = require( './post-encoding' ).postToString,
+var Post = require( './post-encoding' ),
 	Site = require( './site' );
 
 function downloadSite() {
@@ -61,9 +61,12 @@ function writePostsToFiles( posts ) {
 }
 
 function writePostToFile( post ) {
-	var filename = getPostsDirectory() + '/' + post.slug + '.json';
-	console.log( 'writing', filename );
-	fs.writeFile( filename, postToString( post ) );
+	var jsonFilename = getPostsDirectory() + '/' + post.slug + '.json',
+		htmlFilename = getPostsDirectory() + '/' + post.slug + '.html';
+	console.log( 'writing', jsonFilename );
+	fs.writeFile( jsonFilename, Post.postToString( post ) );
+	console.log( 'writing', htmlFilename );
+	fs.writeFile( htmlFilename, Post.postToContent( post ) );
 }
 
 function writeCssToFile( css, type ) {
