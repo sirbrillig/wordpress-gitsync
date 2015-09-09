@@ -42,10 +42,6 @@ var Styles = {
 
 	readStyles: function() {
 		var promise = q.defer();
-		if ( css ) {
-			promise.resolve();
-			return promise.promise;
-		}
 		if ( ! filename ) {
 			promise.reject();
 			return promise.promise;
