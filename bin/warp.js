@@ -32,7 +32,7 @@ if ( ! argv.download && ! argv.upload ) {
 }
 
 function beginWatching() {
-	var toWatch = './' + Site.getUrl();
+	var toWatch = './' + Site.getSiteDirectory();
 	console.log( 'watching for changes to', toWatch );
 	chokidar.watch( toWatch, { persistent: true } ).on( 'change', function( path ) {
 		console.log( 'changes detected to', path );
@@ -46,7 +46,13 @@ function beginWatching() {
 Site.connect( argv.site );
 
 if ( argv.download ) {
-	downloadSite();
+	downloadSite()
+	.then( function() {
+		console.log( 'download complete.' );
+	} )
+	.catch( function() {
+		console.log( 'download failed.' );
+	} );
 } else if ( argv.upload ) {
 	Auth.loadToken()
 	.then( uploadSite )
