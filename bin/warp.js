@@ -51,7 +51,7 @@ if ( argv.download ) {
 		console.log( 'download complete.' );
 	} )
 	.catch( function() {
-		console.log( 'download failed.' );
+		console.log( 'download failed. Look above for errors.' );
 	} );
 } else if ( argv.upload ) {
 	Auth.loadToken()
@@ -61,7 +61,10 @@ if ( argv.download ) {
 			return beginWatching();
 		}
 		// Explicitly kill the app in case a web server is running
-		console.log( 'all done!' );
+		console.log( 'upload complete.' );
 		process.exit();
+	} )
+	.catch( function() {
+		console.log( 'upload failed. Look above for errors.' );
 	} );
 }
