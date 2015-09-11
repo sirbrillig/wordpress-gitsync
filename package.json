@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "A tool to download and upload WordPress content and settings to a local directory.",
   "repository": "sirbrillig/wordpress-warp",
+  "preferGlobal": true,
   "bin": {
     "warp": "bin/warp.js"
   },
@@ -17,7 +18,7 @@
     "prompt": "^0.2.14",
     "q": "^1.4.1",
     "string": "^3.3.1",
-    "wpcom": "^4.6.0",
+    "wpcom": "~4.5.0",
     "wpcom-oauth": "^0.3.3"
   },
   "devDependencies": {},
