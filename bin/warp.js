@@ -72,10 +72,6 @@ function beginWarp() {
 }
 
 // Make sure App settings are set.
-try {
-	Auth.getSettings();
-	beginWarp();
-} catch ( err ) {
-	Auth.promptUserForSettings()
-	.then( beginWarp );
-}
+Auth.loadSettings()
+.catch( Auth.promptUserForSettings )
+.then( beginWarp );
