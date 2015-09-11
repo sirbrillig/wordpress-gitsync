@@ -43,28 +43,35 @@ function beginWatching() {
 	} );
 }
 
-Site.connect( argv.site );
+function beginWarp() {
+	Site.connect( argv.site );
 
-if ( argv.download ) {
-	downloadSite()
-	.then( function() {
-		console.log( 'download complete.' );
-	} )
-	.catch( function() {
-		console.log( 'download failed. Look above for errors.' );
-	} );
-} else if ( argv.upload ) {
-	Auth.loadToken()
-	.then( uploadSite )
-	.then( function() {
-		if ( argv.watch ) {
-			return beginWatching();
-		}
-		// Explicitly kill the app in case a web server is running
-		console.log( 'upload complete.' );
-		process.exit();
-	} )
-	.catch( function() {
-		console.log( 'upload failed. Look above for errors.' );
-	} );
+	if ( argv.download ) {
+		downloadSite()
+		.then( function() {
+			console.log( 'download complete.' );
+		} )
+		.catch( function() {
+			console.log( 'download failed. Look above for errors.' );
+		} );
+	} else if ( argv.upload ) {
+		Auth.loadToken()
+		.then( uploadSite )
+		.then( function() {
+			if ( argv.watch ) {
+				return beginWatching();
+			}
+			// Explicitly kill the app in case a web server is running
+			console.log( 'upload complete.' );
+			process.exit();
+		} )
+		.catch( function() {
+			console.log( 'upload failed. Look above for errors.' );
+		} );
+	}
 }
+
+// Make sure App settings are set.
+Auth.loadSettings()
+.catch( Auth.promptUserForSettings )
+.then( beginWarp );
