@@ -11,10 +11,11 @@ var Site = require( '../lib/site' ),
 	uploadSite = require( '../lib/upload' );
 
 var helpText = 'wordpress-warp: A tool to download and upload WordPress content and settings to a local directory.\n' +
-	'--site=<url>\tOperate on the specified WordPress site. Must be WordPress.com or Jetpack.\n' +
-	'--download\tDownload the site\'s content.\n' +
-	'--upload\tUpload the local version of the site\'s content.\n' +
-	'--watch\t\tWhen combined with --upload watches files for changes and upload whenever they change.\n';
+	'--site=<url>\t\tOperate on the specified WordPress site. Must be WordPress.com or Jetpack.\n' +
+	'--directory=<path>\tUse <path> as the directory for downloading or uploading. Defaults to the hostname.\n' +
+	'--download\t\tDownload the site\'s content.\n' +
+	'--upload\t\tUpload the local version of the site\'s content.\n' +
+	'--watch\t\t\tWhen combined with --upload watches files for changes and upload whenever they change.\n';
 
 // Parse command-line arguments
 var argv = parseArgs( process.argv.slice( 2 ), {
@@ -29,6 +30,9 @@ if ( ! argv.download && ! argv.upload ) {
 	console.log( helpText );
 	console.error( 'Either --download or --upload are required' );
 	process.exit( 1 );
+}
+if ( argv.directory && argv.directory.length ) {
+	Site.setSiteDirectory( argv.directory );
 }
 
 function beginWatching() {
