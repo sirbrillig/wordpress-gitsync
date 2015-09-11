@@ -20,7 +20,7 @@ var helpText = 'wordpress-warp: A tool to download and upload WordPress content 
 var argv = parseArgs( process.argv.slice( 2 ), {
 	boolean: true
 } );
-if ( ! argv.site ) {
+if ( ! argv.site || ! argv.site.length ) {
 	console.log( helpText );
 	console.error( 'Provide a site with the --site option' );
 	process.exit( 1 );
