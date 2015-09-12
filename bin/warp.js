@@ -51,7 +51,8 @@ function beginWarp() {
 	Site.connect( argv.site );
 
 	if ( argv.download ) {
-		downloadSite()
+		Auth.loadToken()
+		.then( downloadSite )
 		.then( function() {
 			console.log( 'download complete.' );
 		} )
