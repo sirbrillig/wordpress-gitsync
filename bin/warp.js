@@ -48,7 +48,7 @@ function beginWatching() {
 }
 
 function beginWarp() {
-	Site.connect( argv.site );
+	Site.setSiteUrl( argv.site );
 
 	if ( argv.download ) {
 		Auth.loadToken()
