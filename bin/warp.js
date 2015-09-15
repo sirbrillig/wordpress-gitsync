@@ -8,7 +8,7 @@ var chokidar = require( 'chokidar' ),
 var Site = require( '../lib/site' ),
 	Auth = require( '../lib/auth' ),
 	downloadSite = require( '../lib/download' ),
-	uploadSite = require( '../lib/upload' );
+	Upload = require( '../lib/upload' );
 
 var helpText = 'wordpress-warp: A tool to download and upload WordPress content and settings to a local directory.\n' +
 	'--site=<url>\t\tOperate on the specified WordPress site. Must be WordPress.com or Jetpack.\n' +
@@ -40,7 +40,7 @@ function beginWatching() {
 	console.log( 'watching for changes to', toWatch );
 	chokidar.watch( toWatch, { persistent: true } ).on( 'change', function( path ) {
 		console.log( 'changes detected to', path );
-		uploadSite()
+		Upload.uploadChangedFile( path )
 		.then( function() {
 			console.log( 'upload complete.' );
 		} );
@@ -48,7 +48,7 @@ function beginWatching() {
 }
 
 function beginWarp() {
-	Site.connect( argv.site );
+	Site.setSiteUrl( argv.site );
 
 	if ( argv.download ) {
 		Auth.loadToken()
@@ -61,7 +61,7 @@ function beginWarp() {
 		} );
 	} else if ( argv.upload ) {
 		Auth.loadToken()
-		.then( uploadSite )
+		.then( Upload.uploadSite )
 		.then( function() {
 			if ( argv.watch ) {
 				return beginWatching();
